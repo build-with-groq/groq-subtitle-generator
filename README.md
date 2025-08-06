@@ -53,7 +53,7 @@ Download from [https://ffmpeg.org/download.html](https://ffmpeg.org/download.htm
 1. **Clone and setup everything**:
    ```bash
    git clone <repository-url>
-   cd movie-subtitles
+   cd groq-subtitle-generator
    chmod +x setup.sh start.sh
    ./setup.sh
    ```
