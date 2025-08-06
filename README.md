@@ -6,7 +6,7 @@ Create subtitles in various languages in mere minutes using Whisper and Qwen3-32
 - **Multi-language Support**: 50+ languages with automatic detection
 - **Ultra-Fast Processing**: Whisper API powered by Groq for lightning-fast transcription
 - **Advanced Translation**: Qwen3-32b by Groq for accurate multilingual translation
-- **Video Processing**: Supports MP4, MOV, AVI, MKV, WMV, FLV, WebM, M4V 
+- **Video Processing**: Supports MP4, MOV, AVI
 - **Burned-in Subtitles**: Create videos with permanently embedded subtitles
 - **Edit Before Translation**: Review and edit transcription for perfect accuracy
 
