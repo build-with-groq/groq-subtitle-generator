@@ -14,6 +14,27 @@ if ! command -v python3 &> /dev/null; then
     exit 1
 fi
 
+# Check if uv is installed, install if not
+if ! command -v uv &> /dev/null; then
+    echo "📦 uv package manager not found. Installing uv..."
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    
+    # Source the environment to make uv available
+    export PATH="$HOME/.cargo/bin:$PATH"
+    
+    # Check if uv is now available
+    if ! command -v uv &> /dev/null; then
+        echo "❌ Failed to install uv. Please install manually:"
+        echo "   curl -LsSf https://astral.sh/uv/install.sh | sh"
+        echo "   Then restart your terminal and run this script again."
+        exit 1
+    fi
+    echo "✅ uv installed successfully"
+else
+    echo "✅ uv package manager found"
+fi
+
+
 # Check if Node.js is installed
 if ! command -v node &> /dev/null; then
     echo "   Node.js is not installed. Please install Node.js 18+"
@@ -48,8 +69,7 @@ fi
 # Activate virtual environment and install dependencies
 echo "Installing Python dependencies..."
 source venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
+uv pip install -r requirements.txt
 echo "Python dependencies installed"
 
 cd ..

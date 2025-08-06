@@ -48,7 +48,13 @@ sudo apt install ffmpeg
 **Windows**:
 Download from [https://ffmpeg.org/download.html](https://ffmpeg.org/download.html)
 
-### Setup & Run
+## 🎯 Setup & Run
+
+Choose your preferred setup method:
+
+### Option 1: Automated Setup (Recommended)
+
+**Easy one-command setup:**
 
 1. **Clone and setup everything**:
    ```bash
@@ -69,9 +75,57 @@ Download from [https://ffmpeg.org/download.html](https://ffmpeg.org/download.htm
    ./start.sh
    ```
 
+The scripts handle all dependency installation, virtual environment setup, and server management automatically!
+
+### Option 2: Manual Setup
+
+**For those who prefer manual control:**
+
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd groq-subtitle-generator
+   ```
+
+2. **Setup Python environment**:
+   ```bash
+   cd backend
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -r requirements.txt
+   cd ..
+   ```
+
+3. **Setup Node.js dependencies**:
+   ```bash
+   npm install
+   ```
+
+4. **Create environment file**:
+   ```bash
+   # Create backend/.env file
+   cat > backend/.env << 'EOF'
+   GROQ_API_KEY=your_groq_api_key_here
+   GROQ_MODEL=qwen/qwen3-32b
+   GROQ_WHISPER_MODEL=whisper-large-v3
+   EOF
+   ```
+
+5. **Start backend server**:
+   ```bash
+   cd backend
+   source venv/bin/activate
+   python main.py
+   ```
+
+6. **In a new terminal, start frontend**:
+   ```bash
+   npm run dev
+   ```
+
 That's it! 🎉 The application will be available at `http://localhost:3000`
 
-### Configuration Options
+## ⚙️ Configuration Options
 
 The `backend/.env` file supports these settings:
 
@@ -97,6 +151,23 @@ GROQ_WHISPER_MODEL=whisper-large-v3  # Options: whisper-large-v3, whisper-large-
 5. **🔄 Translation**: Qwen3-32b translates to your target language
 6. **🎬 Generation**: Create subtitled video with burned-in subtitles
 7. **📥 Download**: Get your subtitled video
+
+
+## 🔍 Troubleshooting
+
+**Scripts not executable?**
+```bash
+chmod +x setup.sh start.sh
+```
+
+**FFmpeg not found?**
+Make sure FFmpeg is installed and available in your PATH.
+
+**API key issues?**
+Ensure your Groq API key is correctly set in `backend/.env`.
+
+**Port conflicts?**
+The app uses ports 3000 (frontend) and 8000 (backend). Make sure these are available.
 
 ## 🙏 Acknowledgments
 
