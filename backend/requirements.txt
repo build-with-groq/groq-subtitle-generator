@@ -1,0 +1,10 @@
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+groq==0.29.0
+ffmpeg-python==0.2.0
+python-dotenv==1.0.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+pysrt==1.1.2
+webvtt-py==0.4.6 
