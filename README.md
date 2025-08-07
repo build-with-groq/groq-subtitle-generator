@@ -170,9 +170,6 @@ Ensure your Groq API key is correctly set in `backend/.env`.
 **Port conflicts?**
 The app uses ports 3000 (frontend) and 8000 (backend). Make sure these are available.
 
-## 🙏 Sample Video To Experiment (Credit: MovieClips.Com, CastleRock Entertaiment)
-
-https://github.com/user-attachments/assets/80b8d55c-8b30-4149-865c-9239cb916145
 
 ## 🙏 Acknowledgments
 
