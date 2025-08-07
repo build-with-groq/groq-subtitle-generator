@@ -1,4 +1,4 @@
-# Video Subtitle Generator
+# Groq Subtitle Generator (Project SubLingo)
 The Groq Subtitle Generator (Project SubLingo) is a demo that showcases Groq in action through high-speed transcription and translation, allowing users to generate burned-in subtitles across languages in just seconds. Users can upload a video in any of the 50+ supported languages, choose the same or a different language for subtitles, review the transcription, and watch the magic unfold. Once a video is uploaded, FFmpeg converts it to a WAV audio file, which is then passed to the Video Processing Service. This audio is transcribed using OpenAI’s Whisper Large V3-turbo model, powered by Groq. Users can edit individual segments to ensure accuracy. If translation is selected, the content is then translated using the Qwen3-32B model through the Groq API. The final subtitles are formatted as an SRT file and rendered onto the video using FFmpeg to produce the final output. Here is a [sample video](https://github.com/user-attachments/assets/1d81f956-c0e7-4995-83ac-856aec1b8b58) file to test the demo out!
 
 https://github.com/user-attachments/assets/97c79dc0-75a9-4ae9-8925-9cf06b7d2dfa
