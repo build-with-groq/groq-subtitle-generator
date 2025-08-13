@@ -459,6 +459,23 @@ export default function VideoSubtitleGenerator() {
     }
   }, [jobId])
 
+  const downloadSrt = useCallback(async () => {
+    if (!jobId) return
+    try {
+      const response = await fetch(`http://localhost:8000/download_srt/${jobId}`)
+      if (!response.ok) throw new Error('SRT not available yet')
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `subtitles_${jobId}.srt`
+      a.click()
+      window.URL.revokeObjectURL(url)
+    } catch (err) {
+      setError('SRT download failed')
+    }
+  }, [jobId])
+
   const resetForm = useCallback(() => {
     setSelectedFile(null)
     setJobId('')
@@ -732,13 +749,22 @@ export default function VideoSubtitleGenerator() {
 
                 {/* download button */}
                 {jobStatus.status === "completed" && (
-                  <button
-                    onClick={downloadVideo}
-                    className="w-full flex items-center justify-center space-x-3 px-8 py-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold text-lg"
-                  >
-                    <Download className="w-6 h-6" />
-                    <span>Download Video with Subtitles</span>
-                  </button>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button
+                      onClick={downloadVideo}
+                      className="w-full flex items-center justify-center space-x-3 px-8 py-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold text-lg"
+                    >
+                      <Download className="w-6 h-6" />
+                      <span>Download Video with Subtitles</span>
+                    </button>
+                    <button
+                      onClick={downloadSrt}
+                      className="w-full flex items-center justify-center space-x-3 px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg"
+                    >
+                      <Download className="w-6 h-6" />
+                      <span>Download SRT</span>
+                    </button>
+                  </div>
                 )}
 
                 {/* reset button */}

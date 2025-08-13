@@ -1,5 +1,5 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException, Form, BackgroundTasks
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, PlainTextResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import logging
@@ -304,6 +304,8 @@ async def continue_processing_after_transcription(job_id: str, edited_transcript
         # generate subtitles and render video
         srt_content = await video_service.subtitle_service.generate_srt_content(final_transcription)
         
+        job["srt_content"] = srt_content
+        
         video_data = job["video_data"]
         
         async with video_service.temporary_file(suffix=".mp4") as temp_video_path:
@@ -359,23 +361,29 @@ async def download_video(job_id: str):
         name, ext = original_filename.rsplit('.', 1)
         download_filename = f"{name}_subtitled.{ext}"
         
-        def cleanup_job():
-            if job_id in active_jobs:
-                del active_jobs[job_id]
-                logger.info(f"Cleaned up job from memory: {job_id}")
+        # mark video as downloaded and cleanup if SRT was also downloaded or not present
+        job["video_downloaded"] = True
         
-        def generate():
-            yield video_bytes
-            cleanup_job()
+        def maybe_cleanup():
+            try:
+                if job.get("video_downloaded") and (job.get("srt_downloaded") or "srt_content" not in job):
+                    del active_jobs[job_id]
+                    logger.info(f"Cleaned up job from memory after downloads: {job_id}")
+            except Exception as e:
+                logger.warning(f"Cleanup check failed for {job_id}: {str(e)}")
         
-        return StreamingResponse(
-            generate(),
+        response = StreamingResponse(
+            io.BytesIO(video_bytes),
             media_type="video/mp4",
             headers={
                 "Content-Disposition": f"attachment; filename={download_filename}",
                 "Content-Length": str(len(video_bytes))
             }
         )
+        
+        # attach cleanup callback via background task on response completion is non-trivial here; best-effort immediate check
+        maybe_cleanup()
+        return response
         
     except Exception as e:
         logger.error(f"Error downloading video: {str(e)}")
@@ -409,6 +417,49 @@ async def preview_video(job_id: str):
         
     except Exception as e:
         logger.error(f"Error streaming video preview: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/download_srt/{job_id}")
+async def download_srt(job_id: str):
+    """Download generated SRT subtitles for a job"""
+    try:
+        if job_id not in active_jobs:
+            raise HTTPException(status_code=404, detail="Job not found")
+        
+        job = active_jobs[job_id]
+        
+        if "srt_content" not in job:
+            raise HTTPException(status_code=400, detail="SRT not available yet")
+        
+        srt_content: str = job["srt_content"]
+        original_filename = job.get("filename", f"job_{job_id}.mp4")
+        target_language = job.get("target_language", "subtitles")
+        name = original_filename.rsplit('.', 1)[0]
+        download_filename = f"{name}_{target_language}.srt"
+        
+        # mark srt as downloaded and cleanup if video was also downloaded or not present
+        job["srt_downloaded"] = True
+        
+        def maybe_cleanup():
+            try:
+                if job.get("srt_downloaded") and (job.get("video_downloaded") or "result_video" not in job):
+                    del active_jobs[job_id]
+                    logger.info(f"Cleaned up job from memory after downloads: {job_id}")
+            except Exception as e:
+                logger.warning(f"Cleanup check failed for {job_id}: {str(e)}")
+        
+        response = PlainTextResponse(
+            content=srt_content,
+            media_type="application/x-subrip; charset=utf-8",
+            headers={
+                "Content-Disposition": f"attachment; filename={download_filename}",
+                "Content-Length": str(len(srt_content.encode('utf-8')))
+            }
+        )
+        maybe_cleanup()
+        return response
+    except Exception as e:
+        logger.error(f"Error downloading SRT: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
