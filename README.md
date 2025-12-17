@@ -61,7 +61,7 @@ Choose your preferred setup method:
 
 1. **Clone and setup everything**:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/build-with-groq/groq-subtitle-generator
    cd groq-subtitle-generator
    chmod +x setup.sh start.sh
    ./setup.sh
@@ -86,7 +86,7 @@ The scripts handle all dependency installation, virtual environment setup, and s
 
 1. **Clone the repository**:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/build-with-groq/groq-subtitle-generator
    cd groq-subtitle-generator
    ```
 
